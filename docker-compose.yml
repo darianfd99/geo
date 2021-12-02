@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  geo:
+    build: .
+    environment:
+      - PORT=8080
+    ports:
+      - 8080:8080

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	localization "github.com/darianfd99/geo/pkg"
@@ -27,22 +28,32 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	return router
 }
 
+type localizationRequest struct {
+	Id   string  `json:"id" binding:"required"`
+	Lat  float64 `json:"lat" binding:"required"`
+	Long float64 `json:"long" binding:"required"`
+}
+
 func (h *Handler) postLocalization(c *gin.Context) {
 
-	var input localization.Localization
+	var input localizationRequest
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := h.services.Localization.Post(input)
+	group, err := h.services.Localization.Post(input.Id, input.Lat, input.Long)
 	if err != nil {
+		if errors.Is(err, localization.ErrInvalidCourseID) {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, StatusResponse{
-		Status: "OK",
+	c.JSON(http.StatusCreated, PostResponse{
+		Group: group,
 	})
 }
 
@@ -53,7 +64,7 @@ func (h *Handler) getAllLocalization(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetAllLocalizationResponse{
+	c.JSON(http.StatusOK, GetAllResponse{
 		Data: listLocalization,
 	})
 

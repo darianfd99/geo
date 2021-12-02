@@ -6,9 +6,11 @@ import (
 )
 
 type Localization interface {
-	Post(loc localization.Localization) error
+	Post(id string, lat float64, long float64) (localization.GroupAvaerageLocation, error)
 	GetAll() ([]localization.Localization, error)
 }
+
+//go:generate mockery --case=snake --outpkg=servicemocks --output=servicemocks --name=Localization
 
 type Service struct {
 	Localization

@@ -7,6 +7,7 @@ type LocalizationRepository interface {
 	GetAll() ([]localization.Localization, error)
 }
 
+//go:generate mockery --case=snake --outpkg=repositorymock --output=repositorymock --name=LocalizationRepository
 type Repository struct {
 	LocalizationRepository
 }

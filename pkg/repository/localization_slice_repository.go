@@ -13,6 +13,7 @@ func NewLocalizationSliceRepository() *LocalizationSliceRepository {
 }
 
 func (r *LocalizationSliceRepository) Save(loc localization.Localization) error {
+
 	r.LocalizationsSlice = append(r.LocalizationsSlice, loc)
 	return nil
 }

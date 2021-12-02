@@ -14,9 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	port = "8080"
-)
+var port = os.Getenv("PORT")
 
 func main() {
 	repo := repository.NewRepository()
@@ -25,12 +23,12 @@ func main() {
 
 	srv := server.NewServer()
 
-	go func(){
+	go func() {
 		if err := srv.Run(port, handlers.InitRoutes()); err != nil {
 			log.Fatalf("error ocurred while running http server: %s", err.Error())
 		}
 	}()
-	
+
 	log.Println("app started")
 
 	quit := make(chan os.Signal, 1)

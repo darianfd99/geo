@@ -1,16 +1,16 @@
-FROM golang:1.16-alpine 
+FROM golang:latest AS build
+
 
 WORKDIR /app 
 
-COPY go.mod ./ 
-COPY go.sum ./ 
+COPY . .
 
-RUN go mod download 
+RUN CGO_ENABLED=0 go test ./...
+RUN CGO_ENABLED=0 go build -o ./main ./cmd/main.go
 
-COPY [".", "./"]
 
+
+FROM scratch
+COPY --from=build /app/main /app/main
 EXPOSE 8080 
-
-RUN go build cmd/main.go 
-
-CMD ["./main"]
+ENTRYPOINT [ "app/main" ]
