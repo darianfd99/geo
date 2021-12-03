@@ -10,6 +10,29 @@ type LocalizationRepository struct {
 	mock.Mock
 }
 
+// DeleteAll provides a mock function with given fields:
+func (_m *LocalizationRepository) DeleteAll() ([]localization.Localization, error) {
+	ret := _m.Called()
+
+	var r0 []localization.Localization
+	if rf, ok := ret.Get(0).(func() []localization.Localization); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]localization.Localization)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAll provides a mock function with given fields:
 func (_m *LocalizationRepository) GetAll() ([]localization.Localization, error) {
 	ret := _m.Called()
@@ -40,6 +63,20 @@ func (_m *LocalizationRepository) Save(loc localization.Localization) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(localization.Localization) error); ok {
 		r0 = rf(loc)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SetList provides a mock function with given fields: list
+func (_m *LocalizationRepository) SetList(list []localization.Localization) error {
+	ret := _m.Called(list)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]localization.Localization) error); ok {
+		r0 = rf(list)
 	} else {
 		r0 = ret.Error(0)
 	}

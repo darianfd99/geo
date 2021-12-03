@@ -18,6 +18,7 @@ func TestLocalizationSliceRepositorySave(t *testing.T) {
 	require.NoError(t, err)
 
 	expectedLocsList := []localization.Localization{*loc1, *loc2}
+	expectedEmptyLocList := []localization.Localization{}
 
 	t.Run("Saving 2 localization objects in the slice and getting all objects", func(t *testing.T) {
 		err = repo.Save(*loc1)
@@ -26,6 +27,21 @@ func TestLocalizationSliceRepositorySave(t *testing.T) {
 		assert.NoError(t, err)
 
 		locList, err := repo.GetAll()
+		assert.NoError(t, err)
+		assert.EqualValues(t, expectedLocsList, locList)
+
+		emptyList, err := repo.DeleteAll()
+		assert.NoError(t, err)
+		assert.Equal(t, expectedEmptyLocList, emptyList)
+
+		emptyList, err = repo.GetAll()
+		assert.NoError(t, err)
+		assert.Equal(t, expectedEmptyLocList, emptyList)
+
+		err = repo.SetList(expectedLocsList)
+		assert.NoError(t, err)
+
+		locList, err = repo.GetAll()
 		assert.NoError(t, err)
 		assert.EqualValues(t, expectedLocsList, locList)
 

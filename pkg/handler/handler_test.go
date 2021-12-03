@@ -30,9 +30,9 @@ func TestHandlerPostLocalization(t *testing.T) {
 		gin.SetMode(gin.TestMode)
 		handler := NewHandler(service)
 		r := handler.InitRoutes()
-		postLocalizationsRequst := localizationRequest{
+		postLocalizationsRequst := LocalizationRequest{
 			Id:  "8a1c5cdc-ba57-445a-994d-aa412d23723f",
-			Lat: 2.34,
+			Lat: &lat,
 		}
 
 		b, err := json.Marshal(postLocalizationsRequst)
@@ -61,10 +61,42 @@ func TestHandlerPostLocalization(t *testing.T) {
 		handler := NewHandler(service)
 		r := handler.InitRoutes()
 
-		postLocalizationsRequst := localizationRequest{
+		postLocalizationsRequst := LocalizationRequest{
 			Id:   "invalid uuid",
-			Lat:  lat,
-			Long: long,
+			Lat:  &lat,
+			Long: &long,
+		}
+
+		b, err := json.Marshal(postLocalizationsRequst)
+		require.NoError(t, err)
+
+		req, err := http.NewRequest(http.MethodPost, "/", bytes.NewBuffer(b))
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		LocationService.AssertExpectations(t)
+		assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+
+	})
+
+	t.Run("received uuid repeated", func(t *testing.T) {
+		LocationService := new(servicemocks.Localization)
+		LocationService.On("Post", id, lat, long).Return(localization.GroupAvaerageLocation{}, service.ErrUuidExists)
+		service := &service.Service{Localization: LocationService}
+
+		gin.SetMode(gin.TestMode)
+		handler := NewHandler(service)
+		r := handler.InitRoutes()
+
+		postLocalizationsRequst := LocalizationRequest{
+			Id:   id,
+			Lat:  &lat,
+			Long: &long,
 		}
 
 		b, err := json.Marshal(postLocalizationsRequst)
@@ -92,10 +124,10 @@ func TestHandlerPostLocalization(t *testing.T) {
 		gin.SetMode(gin.TestMode)
 		handler := NewHandler(service)
 		r := handler.InitRoutes()
-		postLocalizationsRequst := localizationRequest{
+		postLocalizationsRequst := LocalizationRequest{
 			Id:   id,
-			Lat:  lat,
-			Long: long,
+			Lat:  &lat,
+			Long: &long,
 		}
 
 		b, err := json.Marshal(postLocalizationsRequst)
@@ -124,10 +156,10 @@ func TestHandlerPostLocalization(t *testing.T) {
 		handler := NewHandler(service)
 		r := handler.InitRoutes()
 
-		postLocalizationsRequst := localizationRequest{
+		postLocalizationsRequst := LocalizationRequest{
 			Id:   "8a1c5cdc-ba57-445a-994d-aa412d23723f",
-			Lat:  2.34,
-			Long: 1,
+			Lat:  &lat,
+			Long: &long,
 		}
 
 		b, err := json.Marshal(postLocalizationsRequst)
@@ -162,10 +194,10 @@ func TestHandlerGetAllLocalizations(t *testing.T) {
 		gin.SetMode(gin.TestMode)
 		handler := NewHandler(service)
 		r := handler.InitRoutes()
-		postLocalizationsRequst := localizationRequest{
+		postLocalizationsRequst := LocalizationRequest{
 			Id:   id,
-			Lat:  lat,
-			Long: long,
+			Lat:  &lat,
+			Long: &long,
 		}
 
 		b, err := json.Marshal(postLocalizationsRequst)

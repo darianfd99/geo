@@ -21,3 +21,13 @@ func (r *LocalizationSliceRepository) Save(loc localization.Localization) error 
 func (r *LocalizationSliceRepository) GetAll() ([]localization.Localization, error) {
 	return r.LocalizationsSlice, nil
 }
+
+func (r *LocalizationSliceRepository) DeleteAll() ([]localization.Localization, error) {
+	r.LocalizationsSlice = []localization.Localization{}
+	return r.LocalizationsSlice, nil
+}
+
+func (r *LocalizationSliceRepository) SetList(list []localization.Localization) error {
+	r.LocalizationsSlice = list
+	return nil
+}

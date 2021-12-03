@@ -53,6 +53,25 @@ func TestLocalizationServicePost(t *testing.T) {
 
 	})
 
+	t.Run("uuid repeated", func(t *testing.T) {
+		mockRepository := new(repositorymock.LocalizationRepository)
+		mockRepository.On("Save", mock.Anything).Return(nil)
+		mockRepository.On("GetAll").Return([]localization.Localization{*loc}, nil)
+
+		repos := &repository.Repository{
+			LocalizationRepository: mockRepository,
+		}
+
+		services := NewService(repos)
+
+		_, err = services.Localization.Post(loc.Id.String(), lat, long)
+		mockRepository.AssertCalled(t, "GetAll")
+		mockRepository.AssertNotCalled(t, "Save")
+
+		assert.Error(t, err)
+		assert.Equal(t, errors.Is(err, ErrUuidExists), true)
+	})
+
 	t.Run("3 geolocations less than one kilometer and one more than one kilometer", func(t *testing.T) {
 		loc1, err := localization.NewLocalization("8a1c5cdc-ba57-445a-994d-aa412d23723a", 1.1, 1.1)
 		require.NoError(t, err)
